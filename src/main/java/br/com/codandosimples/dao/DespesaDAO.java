@@ -3,7 +3,7 @@ package br.com.codandosimples.dao;
 import br.com.codandosimples.infra.ConnectionFactory;
 import br.com.codandosimples.model.Categoria;
 import br.com.codandosimples.model.Despesa;
-import sun.security.krb5.internal.crypto.Des;
+
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -47,7 +47,7 @@ public class DespesaDAO implements IDespesaDAO{
 
     @Override
     public List<Despesa> findAll() {
-        String sql = "SELECT id, descricao, data, valor, categoria FROM Despesas";
+        String sql = "SELECT id, descricao, data, valor, categoria FROM despesas";
         List<Despesa> despesas = new ArrayList<>();
         try(Connection connection = ConnectionFactory.getConnection()){
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -60,22 +60,65 @@ public class DespesaDAO implements IDespesaDAO{
                 double valor = rs.getDouble("valor");
                 Categoria categoria = Categoria.valueOf(rs.getString("categoria"));
 
+                Despesa despesa = new Despesa(id, descricao, data, valor, categoria);
+                despesas.add(despesa);
+            }
+
+        }catch (SQLException ex){
+            throw new RuntimeException(ex);
+        }
+        return despesas;
+    }
+
+    @Override
+    public Optional<Despesa> findById(Long id) {
+        String sql = "SELECT id, descricao, data, valor, categoria FROM despesas WHERE id = ?";
+        Despesa despesa = null;
+        try(Connection connection = ConnectionFactory.getConnection()){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1,id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Long pkey = rs.getLong("id");
+                String descricao = rs.getString("descricao");
+                LocalDate data = rs.getDate("data").toLocalDate();
+                double valor = rs.getDouble("valor");
+                Categoria categoria = Categoria.valueOf(rs.getString("categoria"));
+
+                 despesa = new Despesa(pkey, descricao, data, valor, categoria);
 
             }
 
         }catch (SQLException ex){
             throw new RuntimeException(ex);
         }
-        return null;
-    }
-
-    @Override
-    public Optional<Despesa> findById(Long id) {
-        return Optional.empty();
+        return Optional.ofNullable(despesa);
     }
 
     @Override
     public List<Despesa> findByCategoria(Categoria categoria) {
-        return null;
+        String sql = "SELECT id, descricao, data, valor, categoria FROM despesas WHERE categoria = ?";
+        List<Despesa> despesas = new ArrayList<>();
+        try(Connection connection = ConnectionFactory.getConnection()){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString (1, categoria.toString ());
+
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Long id = rs.getLong("id");
+                String descricao = rs.getString("descricao");
+                LocalDate data = rs.getDate("data").toLocalDate();
+                double valor = rs.getDouble("valor");
+                Categoria cat = Categoria.valueOf(rs.getString("categoria"));
+
+                Despesa despesa = new Despesa(id, descricao, data, valor, cat);
+                despesas.add(despesa);
+            }
+
+        }catch (SQLException ex){
+            throw new RuntimeException(ex);
+        }
+        return despesas;
     }
 }
