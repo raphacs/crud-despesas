@@ -28,14 +28,14 @@ public class Application {
 //            System.out.println ("Valor:" + despesa.getValor ());
 //        });
 
-        List<Despesa> despesas = dao.findByCategoria (Categoria.TRANSPORTE);
-            for(Despesa despesa: despesas){
-                System.out.println("ID:"+ despesa.getId());
-                System.out.println("CATEGORIA:"+ despesa.getCategoria ());
-                System.out.println("Descricao:"+ despesa.getDescricao());
-                System.out.println("Valor:"+ despesa.getValor());
-
-            }
+//        List<Despesa> despesas = dao.findByCategoria (Categoria.TRANSPORTE);
+//            for(Despesa despesa: despesas){
+//                System.out.println("ID:"+ despesa.getId());
+//                System.out.println("CATEGORIA:"+ despesa.getCategoria ());
+//                System.out.println("Descricao:"+ despesa.getDescricao());
+//                System.out.println("Valor:"+ despesa.getValor());
+//
+//            }
 
     }
 }
