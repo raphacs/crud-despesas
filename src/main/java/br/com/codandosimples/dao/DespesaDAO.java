@@ -3,6 +3,7 @@ package br.com.codandosimples.dao;
 import br.com.codandosimples.infra.ConnectionFactory;
 import br.com.codandosimples.model.Categoria;
 import br.com.codandosimples.model.Despesa;
+import br.com.codandosimples.model.DespesaInserir;
 
 
 import java.sql.*;
@@ -12,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DespesaDAO implements IDespesaDAO{
-    @Override
-    public Despesa save(Despesa despesa) {
+    public DespesaInserir save(DespesaInserir despesa) {
         try (Connection connection = ConnectionFactory.getConnection()) {
             String sql = "INSERT INTO Despesas (descricao, valor, data, categoria) VALUES(?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -32,16 +32,50 @@ public class DespesaDAO implements IDespesaDAO{
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+        return despesa;
+    }
+
+    @Override
+    public Despesa save(Despesa despesa) {
         return null;
     }
 
     @Override
     public Despesa update(Despesa despesa) {
-        return null;
+        try (Connection connection = ConnectionFactory.getConnection()) {
+            String sql = "UPDATE Despesas SET descricao = ?, valor = ?, data = ?, categoria = ? WHERE id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, despesa.getDescricao());
+            preparedStatement.setDouble(2, despesa.getValor());
+            preparedStatement.setDate(3, java.sql.Date.valueOf(despesa.getData()));
+            preparedStatement.setString(4, despesa.getCategoria().toString());
+            preparedStatement.setLong (5, despesa.getId());
+
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+    return despesa;
     }
 
     @Override
     public void delete(Long id) {
+        try (Connection connection = ConnectionFactory.getConnection()) {
+            String sql = "DELETE FROM Despesas WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong (1,id);
+
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
 
     }
 
